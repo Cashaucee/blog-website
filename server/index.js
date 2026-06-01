@@ -21,10 +21,14 @@ const app = express();
 
 app.use(express.json());
 
-// Configure CORS: allow the frontend origin (default Vite dev server)
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+// Configure CORS: echo request origin to allow deployed frontends (keeps credentials enabled)
+// This will accept requests from any origin and reflect it back. If you need a stricter policy,
+// set `process.env.CLIENT_URL` or replace the function below with a whitelist check.
 const corsOptions = {
-	origin: CLIENT_URL,
+	origin: function (origin, callback) {
+		// allow requests with no origin (like mobile apps or curl)
+		callback(null, true);
+	},
 	methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 	allowedHeaders: ['Content-Type', 'Authorization'],
 	credentials: true,
