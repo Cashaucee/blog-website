@@ -23,6 +23,8 @@ export const useGlobalStore = defineStore('global', () => {
 			user.token = null;
 			user.id = null;
 			user.email = null;
+			user.role = null;
+			user.isAdmin = false;
 			return
 		}
 		
