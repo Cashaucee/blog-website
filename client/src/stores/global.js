@@ -40,13 +40,11 @@ export const useGlobalStore = defineStore('global', () => {
 			const payload = data.user ? data.user : data;
 			user.id = payload._id || payload.id || null;
 			user.email = payload.email || null;
-			// Try to populate a role field and isAdmin flag if provided by the API
 			user.role = payload.role || (payload.isAdmin ? 'admin' : (payload.isAdmin === false ? 'user' : null)) || payload.roleName || null;
 			user.isAdmin = !!payload.isAdmin || user.role === 'admin';
 			console.log('user state set to:', user);
 
 		} catch (error) {
-			// Notify user that fetching profile failed and clear local state
 			notyf.error(error?.response?.data?.message || 'Failed to fetch user details');
 			getUserDetails(null);
 		}

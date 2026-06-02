@@ -13,8 +13,14 @@ const comments = ref([]);
 const comment = ref('');
 const isLoading = ref(false);
 const notyf = new Notyf();
-const { user } = useGlobalStore();
+const { user, isOwnerOf, isAdmin } = useGlobalStore();
 
+const isEditing = ref(false);
+const editTitle = ref('');
+const editContent = ref('');
+const isSaving = ref(false);
+
+// instead of normal date, will do the yt or more modern style
 function formatRelative(dateInput) {
 	if (!dateInput) return '';
 	const date = new Date(dateInput);
@@ -37,6 +43,23 @@ function formatRelative(dateInput) {
 
 function goBack(){
 	router.back();
+}
+
+// 
+function startEdit(){
+	if(!post.value) return;
+	const author = post.value.author;
+	const authorId = author?._id || author;
+	if(!isOwnerOf(authorId)) return notyf.error('You are not allowed to edit this post');
+	editTitle.value = post.value.title || '';
+	editContent.value = post.value.content || '';
+	isEditing.value = true;
+}
+
+function cancelEdit(){
+	isEditing.value = false;
+	editTitle.value = '';
+	editContent.value = '';
 }
 
 async function loadPost() {
@@ -86,6 +109,25 @@ async function createComment() {
 	}
 }
 
+async function savePost(){
+	if(!user.token) return notyf.error('You must be logged in to edit');
+	if(!editTitle.value || !editTitle.value.trim()) return notyf.error('Title cannot be empty');
+	if(!editContent.value || !editContent.value.trim()) return notyf.error('Content cannot be empty');
+	try{
+		isSaving.value = true;
+		const id = route.params.postId;
+		const res = await api.patch(`/posts/update/${id}`, { title: editTitle.value, content: editContent.value });
+		post.value = res.data;
+		notyf.success('Post updated');
+		isEditing.value = false;
+	} catch(e){
+		console.error(e);
+		notyf.error(e?.response?.data?.message || 'Failed to update post');
+	} finally{
+		isSaving.value = false;
+	}
+}
+
 onMounted(loadPost);
 </script>
 
@@ -94,13 +136,26 @@ onMounted(loadPost);
 		<div class="row">
 			<div class="col-md-8 mx-auto">
 				<button class="btn btn-secondary mb-3" @click="goBack">Back</button>
+				<button v-if="post && (isOwnerOf(post.author?._id || post.author))" class="btn btn-outline-secondary mb-3 ms-2" @click="startEdit">Edit</button>
 				<div v-if="!post">Loading...</div>
 				<div v-else class="card">
 					<div class="card-body">
-						<h2>{{ post.title }}</h2>
+						<h2 v-if="!isEditing">{{ post.title }}</h2>
+						<div v-else>
+							<input v-model="editTitle" class="form-control mb-2" />
+						</div>
 						<h6 class="text-muted">by {{ post.authorName || post.author?.username }}</h6>
 						<p class="text-muted">{{ formatRelative(post.createdAt) }}</p>
-						<div class="mt-3">{{ post.content }}</div>
+						<div class="mt-3">
+							<div v-if="isEditing">
+								<textarea v-model="editContent" class="form-control" rows="8"></textarea>
+								<div class="mt-2 d-flex justify-content-end">
+									<button class="btn btn-secondary me-2" @click="cancelEdit" :disabled="isSaving">Cancel</button>
+									<button class="btn btn-primary" @click="savePost" :disabled="isSaving">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+								</div>
+							</div>
+							<div v-else>{{ post.content }}</div>
+						</div>
 					</div>
 				</div>
                 <div  class="card mb-4 mt-2">
