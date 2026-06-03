@@ -1,77 +1,51 @@
+# Simple Blog App
 
-# Vue 3 + Vite
+Users can register/login, create posts, view post details, and delete their own posts. Admin users can be added to the database to perform admin actions (if implemented).
 
-### **Application Name: Rice Age App**
-**Team Members**
-- **Vaneza Diarios**
-- **Cassius Wayne Reyes**
+## Sample credentials
+Use these test accounts for development and testing. You can create them with the register form in the app or insert them directly into your MongoDB if you prefer.
 
----
+- Regular user
+	- username: Sample1
+	- email: sample@mail.com
+	- password: sample123
 
-## **Console Commands to use the App Locally**
+- Admin user
+	- username: admin1
+	- email: admin@mail.com
+	- password: admin123
+
+Note: passwords shown here are plaintext for convenience — in production use stronger passwords and secure secrets.
+
+## Environment variables
+Create a `.env` file in the `server` folder with values like:
 
 ```
+PORT=4000
+MONGODB_STRING=mongodb://localhost:27017/blogdb
+JWT_SECRET_KEY=your_jwt_secret_here
+```
+
+On the client side, set the API base URL in a Vite env file (e.g. `.env` or `.env.local` in the `client` folder):
+
+```
+VITE_BLOG_API=http://localhost:4000
+```
+
+## Run (development)
+From the project root, open two terminals.
+
+1) Start the backend:
+```bash
 cd server
 npm install
+# start with node or nodemon
 node index.js
 ```
-```
+
+2) Start the frontend:
+```bash
 cd client
 npm install
 npm run dev
 ```
-
-
----
-
-## **User Credentials**
-
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Admin User** | `admin@mail.com` | `admin123` |
-| **Dummy Customer** | `jamesDoe@mail.com` | `sample123` |
-
----
-
-## **Features**
-### **Features by Vaneza Diarios**
-
-**User Resources:**
-- User Registration
-- User Login
-
-**Admin Dashboard:**
-- Retrieve all products
-- Deactivate/reactivate product
-
-**Cart View:**
-- Get All Cart
-- Subtotal for each item
-- Total price for all items
-
-**Other feature:**
-- Application Responsiveness
-- UI Design
-- Error Page
-
-
-### **Features by Cassius Wayne Reyes**
-
-**Products Catalog Page:**
-- Retrieve all active products
-- Retrieve single product
-
-**Admin Dashboard:**
-- Create Product
-- Update Product Information
-
-**Cart View:**
-- Add to cart
-- Update quantity
-- Remove item from cart
-- Clear all items from cart
-
-**Other Features:**
-- Navigation bar
-- Loading screen
-
