@@ -8,6 +8,22 @@
 
 ---
 
+## **Console Commands to use the App Locally**
+
+```
+cd server
+npm install
+node index.js
+```
+```
+cd client
+npm install
+npm run dev
+```
+
+
+---
+
 ## **User Credentials**
 
 | Role | Email | Password |
